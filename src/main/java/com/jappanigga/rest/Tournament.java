@@ -1,14 +1,20 @@
 package com.jappanigga.rest;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
+import com.jappanigga.dto.City;
+import com.jappanigga.dto.Match;
 import com.jappanigga.dto.Team;
 import com.jappanigga.dto.TeamPlayer;
 
@@ -19,6 +25,7 @@ public class Tournament {
 	private Team uruguay;
 	private Team brazil;
 	private Team paraguay;
+	private List<Match> matchList;
 
 	@GET
 	@Path("/team")
@@ -60,14 +67,37 @@ public class Tournament {
 		player.setLastName("");
 		return player;
 	}
+	
+	@GET
+	@Path("/match")
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<Match> getMatch() {
+		return DataSingleton.getInstance().getMatchList();
+	}
+	
+	@POST
+	@Path("/match")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response addMatch(Match match){
+		String result;
+		DataSingleton.getInstance().addMatch(match);
+		result = "Match added succesfully";
+		return Response.status(201).entity(result).build();
+	}
 
 	public Tournament() {
 		setArgentina();
 		setUruguay();
 		setBrazil();
 		setParaguay();
+		setMatchList();
 	}
 	
+
+	private void setMatchList() {
+		DataSingleton.getInstance().addMatch(new Match(1,new City(1,"Argentina"),new Date(),argentina,paraguay));
+		DataSingleton.getInstance().addMatch(new Match(2, new City(2,"Uruguay"), new Date(), uruguay, brazil));
+	}
 
 	private void setParaguay() {
 		List<TeamPlayer> players = new ArrayList();
